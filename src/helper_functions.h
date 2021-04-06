@@ -248,4 +248,27 @@ inline bool read_landmark_data(std::string filename,
   return true;
 }
 
+/**
+ * calculate a particle's final weight by using the product of each measurement's Multivariate-Gaussian probability density.
+ * the initial uncertainty of the landmark position (sigma_x, sigma_y), the coordinate of the observation (x_obs, y_obs), 
+ * and the associated landmark coordinates accordingly (mu_x, mu_y)
+ * @output particle weight
+ */
+inline double multi_prob(double sigma_x, double sigma_y, double x_obs, double y_obs, double mu_x, double mu_y){
+  // calculate normalization term
+  double gauss_norm;
+  gauss_norm = 1 / (2 * M_PI * sigma_x * sigma_y);
+
+  // calculate exponent
+  double exponent;
+  exponent = (pow(x_obs - mu_x, 2) / (2 * pow(sigma_x, 2)))
+               + (pow(y_obs - mu_y, 2) / (2 * pow(sigma_y, 2)));
+    
+  // calculate weight using normalization terms and exponent
+  double weight;
+  weight = gauss_norm * exp(-exponent);
+    
+  return weight;
+}
+
 #endif  // HELPER_FUNCTIONS_H_
